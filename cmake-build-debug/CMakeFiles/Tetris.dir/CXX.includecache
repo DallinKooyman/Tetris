@@ -677,8 +677,12 @@ SFML/Config.hpp
 C:/SFML/include/SFML/Window/WindowStyle.hpp
 
 C:/Users/thedk/CodingProjects/Tetris/main.cpp
+iostream
+-
 SFML/Graphics.hpp
 -
 time.h
+-
+string
 -
 
