@@ -681,8 +681,10 @@ iostream
 -
 SFML/Graphics.hpp
 -
-time.h
+ctime
 -
 string
+-
+cstdlib
 -
 

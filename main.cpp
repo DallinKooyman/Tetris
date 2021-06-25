@@ -1,12 +1,16 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include <time.h>
+#include <ctime>
 #include <string>
+#include <cstdlib>
 
 using namespace sf;
 
 
 const std::string kTileTextureFilePath = "tiles.png";
+const std::string kBackgroujndTextureFilePath = "background.png";
+const std::string kFrameTextureFilePath = "frame.png";
+
 const int kMaxTiles = 4;
 const int kTotalPieces = 7;
 const int kTilePixelSize = 18;
@@ -58,23 +62,39 @@ int main() {
 
   RenderWindow window(VideoMode(320, 480), "Tetris");
 
-  Texture texture;
-  texture.loadFromFile(kTileTextureFilePath);
-  texture.setSmooth(true);
+  Texture tile_texture;
+  tile_texture.loadFromFile(kTileTextureFilePath);
+  tile_texture.setSmooth(true);
 
-  Sprite sprite(texture);
-  //Left X, Top Y, Num X pixels to show, Num Y pixels to show
-  sprite.setTextureRect(IntRect(0, 0, kTilePixelSize, kTilePixelSize));
+  Texture background_texture;
+  background_texture.loadFromFile(kBackgroujndTextureFilePath);
+  background_texture.setSmooth(true);
+
+  Texture frame_texture;
+  frame_texture.loadFromFile(kFrameTextureFilePath);
+  frame_texture.setSmooth(true);
+
+  Sprite tile_sprite(tile_texture);
+  Sprite background_sprite(background_texture);
+  Sprite frame_sprite(frame_texture);
 
   Clock clock;
 
   int dx = 0;
   bool rotate = false;
-  int color_num = 1;
+  int color_num = 1 + rand() % kNumColors;
+  int next_shape_index = rand() % kTotalPieces;
   float timer = 0;
   float fall_delay = 0.3;
 
   int playable_area[kFieldHeight][kFieldWidth] = {0};
+
+  for (int i = 0; i < kMaxTiles; i++) {
+    //Max of 2 Tiles on x-axis
+    shape_tile_coordinates[i].x = kTertriminos[next_shape_index][i] % 2;
+    //Max of 4 Tiles on y-axis
+    shape_tile_coordinates[i].y = kTertriminos[next_shape_index][i] / 2;
+  }
 
   while (window.isOpen()) {
     float time = clock.getElapsedTime().asSeconds();
@@ -101,7 +121,10 @@ int main() {
             break;
         }
       }
+    }
 
+    if (Keyboard::isKeyPressed(Keyboard::Down)) {
+      fall_delay = 0.05;
     }
 
     //Movement
@@ -145,7 +168,7 @@ int main() {
           playable_area[overflow_shape_tile_coordinates[i].y][overflow_shape_tile_coordinates[i].x]=color_num;
         }
         color_num = 1 + rand() % kNumColors;
-        int next_shape_index = rand() % kTotalPieces;
+        next_shape_index = rand() % kTotalPieces;
         for (int i = 0; i < kMaxTiles; i++) {
           //Max of 2 Tiles on x-axis
           shape_tile_coordinates[i].x = kTertriminos[next_shape_index][i] % 2;
@@ -156,26 +179,55 @@ int main() {
       timer = 0;
     }
 
+    //Check for full line
+    int k = kFieldHeight - 1;
+    for (int i = kFieldHeight - 1; i > 0; --i) {
+      int count = 0;
+      for (int j = 0; j < kFieldWidth; ++j) {
+        if (playable_area[i][j]) {
+          count++;
+        }
+        playable_area[k][j] = playable_area[i][j];
+      }
+      if (count < kFieldWidth) {
+        k--;
+      }
+    }
+
+
+
+
     dx = 0;
     rotate = false;
+    fall_delay = 0.3;
 
     //Create board
     window.clear(Color::White);
+    window.draw(background_sprite);
+
     for (int i = 0; i < kFieldHeight; ++i) {
       for (int j = 0; j < kFieldWidth; ++j) {
         if (playable_area[i][j] == 0){
           continue;
         }
-        sprite.setPosition(j*kTilePixelSize, i*kTilePixelSize);
-        window.draw(sprite);
+        tile_sprite.setTextureRect(IntRect(playable_area[i][j] * kTilePixelSize, 0,
+                                           kTilePixelSize, kTilePixelSize));
+        tile_sprite.setPosition(j * kTilePixelSize, i * kTilePixelSize);
+        tile_sprite.move(28,31);
+        window.draw(tile_sprite);
       }
     }
 
     for (int i = 0; i < kMaxTiles; i++) {
-      sprite.setPosition(shape_tile_coordinates[i].x * kTilePixelSize,
+      tile_sprite.setTextureRect(IntRect(color_num * kTilePixelSize, 0,
+                                         kTilePixelSize, kTilePixelSize));
+      tile_sprite.setPosition(shape_tile_coordinates[i].x * kTilePixelSize,
                          shape_tile_coordinates[i].y * kTilePixelSize);
-      window.draw(sprite);
+      tile_sprite.move(28,31);
+      window.draw(tile_sprite);
     }
+    //Frame goes after so pieces do appear above it
+    window.draw(frame_sprite);
     window.display();
   }
 
