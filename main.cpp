@@ -1,6 +1,5 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include <SFML/System/String.hpp>
 #include <ctime>
 #include <string>
 #include <cstdlib>
@@ -11,12 +10,24 @@ const std::string kTileTextureFilePath = "tiles.png";
 const std::string kBackgroundTextureFilePath = "background.png";
 const std::string kFrameTextureFilePath = "frame.png";
 const std::string kScoreFrameTextureFilePath = "score_frame.png";
+const std::string kCalibriFontFilePath = "calibri.ttf";
 
 const int kMaxTiles = 4;
 const int kTotalTetriminos = 8;
 const int kTilePixelSize = 18;
 const int kFieldWidth = 10;
 const int kFieldHeight = 20;
+
+const int kWindowWidth = 320;
+const int kWindowHeight = 480;
+const int kScoreStartX = 307;
+const int kScoreStartY = 455;
+const int kScoreTextSize = 40;
+const int kTileSpriteX_Offset = 28;
+const int kTileSpriteY_Offset = 31;
+
+const float kScoreFrameX_Scale = 0.2;
+const float kScoreFrameY_Scale = 0.17;
 
 // There are 7 Tetris blocks (called Tetriminos), each have 4 blocks and a name
 // Each number represents a filled in block in a 2x4 array
@@ -109,11 +120,16 @@ void RotateTetrimino(bool clockwise_rotation, bool counter_clockwise_rotation,
   }
 }
 
+int AlignPoints(const std::string& score) {
+  int length = score.size();
+  return kScoreStartX - (length-1) * kScoreTextSize / 2;
+}
+
 int main() {
 
   srand(time(0));
 
-  RenderWindow window(VideoMode(320, 480), "Tetris");
+  RenderWindow window(VideoMode(kWindowWidth, kWindowHeight), "Tetris");
 
   Texture tile_texture;
   tile_texture.loadFromFile(kTileTextureFilePath);
@@ -135,14 +151,14 @@ int main() {
   Sprite background_sprite(background_texture);
   Sprite frame_sprite(frame_texture);
   Sprite score_frame_sprite(score_frame_texture);
-  score_frame_sprite.scale(0.2, 0.17);
+  score_frame_sprite.scale(kScoreFrameX_Scale, kScoreFrameY_Scale);
 
   Font font;
-  font.loadFromFile("calibri.ttf");
+  font.loadFromFile(kCalibriFontFilePath);
 
   int score = 0;
-  Text score_as_text(std::to_string(score), font, 40);
-  score_as_text.setPosition(307, 455);
+  Text score_as_text(std::to_string(score), font, kScoreTextSize);
+  score_as_text.setPosition(kScoreStartX, kScoreStartY);
   score_as_text.setFillColor(Color::Black);
 
   FloatRect floatRect = score_as_text.getLocalBounds();
@@ -279,7 +295,7 @@ int main() {
         break;
     }
 
-    //Reset eeverything for next button press
+    //Reset everything for next button press
     x_movement = 0;
     clockwise_rotation = false;
     counter_clockwise_rotation = false;
@@ -299,7 +315,7 @@ int main() {
                 IntRect(playable_area[i][j] * kTilePixelSize, 0,
                         kTilePixelSize, kTilePixelSize));
         tile_sprite.setPosition(j * kTilePixelSize, i * kTilePixelSize);
-        tile_sprite.move(28, 31);
+        tile_sprite.move(kTileSpriteX_Offset, kTileSpriteY_Offset);
         window.draw(tile_sprite);
       }
     }
@@ -310,7 +326,7 @@ int main() {
                                          kTilePixelSize, kTilePixelSize));
       tile_sprite.setPosition(current_tetrimino_coords[i].x * kTilePixelSize,
                               current_tetrimino_coords[i].y * kTilePixelSize);
-      tile_sprite.move(28, 31);
+      tile_sprite.move(kTileSpriteX_Offset, kTileSpriteY_Offset);
       window.draw(tile_sprite);
     }
 
@@ -318,6 +334,8 @@ int main() {
     window.draw(frame_sprite);
     score_frame_sprite.setPosition(195, 400);
     score_as_text.setString(std::to_string(score));
+    std::cout << AlignPoints(std::to_string(score)) << std::endl;
+    score_as_text.setPosition(AlignPoints(std::to_string(score)), kScoreStartY);
     window.draw(score_frame_sprite);
     window.draw(score_as_text);
     window.display();

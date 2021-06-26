@@ -681,8 +681,6 @@ iostream
 -
 SFML/Graphics.hpp
 -
-SFML/System/String.hpp
--
 ctime
 -
 string
