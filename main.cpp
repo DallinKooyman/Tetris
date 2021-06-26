@@ -334,7 +334,6 @@ int main() {
     window.draw(frame_sprite);
     score_frame_sprite.setPosition(195, 400);
     score_as_text.setString(std::to_string(score));
-    std::cout << AlignPoints(std::to_string(score)) << std::endl;
     score_as_text.setPosition(AlignPoints(std::to_string(score)), kScoreStartY);
     window.draw(score_frame_sprite);
     window.draw(score_as_text);
