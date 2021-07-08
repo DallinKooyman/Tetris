@@ -10,6 +10,9 @@ I decieded to replicate Tetris as a way to expand my coding knowledge as well as
 to build a simple video game. I am interested in making video games and this is
 a nice way to get my feet in the water.
 
+## Installation
+To install, run and play this Tetris, download Tetris.zip. Unzip the file and run Tetris.exe. 
+
 ## Features
 While following a simple [youtube tutorial](https://www.youtube.com/watch?v=zH_omFPqMO4)
 I was able to implement the main functionality of Tetris. While the tutorial was
