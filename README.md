@@ -12,6 +12,8 @@ a nice way to get my feet in the water.
 
 ## Installation
 To install, run, and play this Tetris, download Tetris.zip. Unzip the file and run Tetris.exe. 
+Alternatively, you can find all the files needed in the Release folder that is found in the same
+directory as this README.
 
 ## Features
 While following a simple [youtube tutorial](https://www.youtube.com/watch?v=zH_omFPqMO4)
